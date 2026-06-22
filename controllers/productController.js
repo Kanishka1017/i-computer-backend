@@ -169,3 +169,7 @@ export async function getProductById(req , res){
         res.status(500).json({message : "Erroe fetching Product", error : error})
     }
 }
+
+export async function searchProduct(req , res){
+    
+}

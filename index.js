@@ -4,9 +4,12 @@ import userRouter from './router/userRouter.js'
 import productRouter from './router/productRouter.js'
 import jwt from "jsonwebtoken"
 import AuthorizaUser from './lib/jwtMiddleware.js'
+import cors from "cors"
+import dotenv from "dotenv"
 
+dotenv.config()
 
-const mongoURI = "mongodb://testuser:Test1234@ac-onwqjst-shard-00-00.zgjnxjn.mongodb.net:27017,ac-onwqjst-shard-00-01.zgjnxjn.mongodb.net:27017,ac-onwqjst-shard-00-02.zgjnxjn.mongodb.net:27017/mydb?authSource=admin&replicaSet=atlas-ega32u-shard-0&tls=true"
+const mongoURI = process.env.MONGO_URI
 
 mongoose.connect(mongoURI).then(
     ()=>{
@@ -24,10 +27,12 @@ const app = express()
 //Midle ware
 app.use(express.json())
 
+app.use(cors ())
+
 app.use(AuthorizaUser)
 
-app.use("/user",userRouter)
-app.use("/product", productRouter)
+app.use("/api/user",userRouter)
+app.use("/api/product", productRouter)
 
 app.listen(3000,
     ()=>{

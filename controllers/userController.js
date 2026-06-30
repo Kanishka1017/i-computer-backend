@@ -1,8 +1,9 @@
 import User from "../models/user.js";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+import dotenv from "dotenv"
 
-
+dotenv.config()
 export async function createUser(req , res){
         const hashedPassword = bcrypt.hashSync(req.body.password,10)
 
@@ -35,7 +36,7 @@ export function loginUser(req,res){
             (user)=>{
                
                 if(user==null){
-                    res.status(500).json({
+                    res.status(404).json({
                         message : "User with given email not found"
                     })
                 }
@@ -52,7 +53,7 @@ export function loginUser(req,res){
                             role : user.role,
                             image : user.image,
                             isEmailVerified : user.isEmailVerified
-                        } , "i-computers-54")
+                        } , process.env.JWT_SECRET)
 
                         console.log(token)
 
@@ -68,6 +69,7 @@ export function loginUser(req,res){
                         res.json({
                             message : "Login Successful",
                             token: token,
+                            role : user.role,
                         })
                     }
 
@@ -80,7 +82,8 @@ export function loginUser(req,res){
 
             }
         ).catch(
-            ()=>{
+            (error)=>{
+                console.log(error)
                 res.status(500).json({message : "Internal server error"})
             }
         )

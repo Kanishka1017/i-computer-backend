@@ -53,9 +53,8 @@ export function loginUser(req,res){
                             role : user.role,
                             image : user.image,
                             isEmailVerified : user.isEmailVerified
-                        } , process.env.JWT_SECRET)
-
-                        console.log(token)
+                        } , process.env.JWT_SECRET,
+                    )
 
                         console.log({
                             email : user.email,
@@ -91,10 +90,10 @@ export function loginUser(req,res){
 }
 
 export function isAdmin(req){
-    if(req.user.role == null){
+    if(req.user == null){
         return false
     }
-    if(req.role == "admin"){
+    if(req.user.role == "admin"){
         return true
     }else{
         return false

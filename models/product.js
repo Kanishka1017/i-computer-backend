@@ -31,7 +31,7 @@ const productSchema = new mongoose.Schema(
             default : "other"
         },
         images : {
-            type : String,
+            type : [String],
             default : ["/image/default-product-1.png"]
         },
         isVisible :{

@@ -3,7 +3,7 @@ import { isAdmin } from "./userController.js";
 
 export async function createProduct(req, res){
 
-    if(isAdmin(req)){
+    if(!isAdmin(req)){
         res.status(403).json({
             message : "Access denide.admins only"
         })
@@ -56,7 +56,9 @@ export async function createProduct(req, res){
         res.status(201).json({message : "Product Create Successfull", product : newProduct})
 
     }catch(error){
+        console.log(error)
         res.status(500).json({message : "error calculating product", error : error})
+        
     }
 }
 
@@ -65,10 +67,10 @@ export async function getProduct(req , res){
 
         if(isAdmin(req)){
             const product = await Product.find();
-            res.status(500).json(Products);
+            res.status(200).json(product);
         }else{
-            const products = await Product.find({isVisible : true})
-            res.status(200).json(products);
+            const product = await Product.find({isVisible : true})
+            res.status(200).json(product);
         }
 
         
@@ -79,7 +81,7 @@ export async function getProduct(req , res){
 }
 
 export async function deleteProduct(req , res){
-    if(isAdmin(req)){
+    if(!isAdmin(req)){
         res.status(403).json({message : "Accessed denide. Admin Only!"})
         return;
     }
@@ -98,7 +100,7 @@ export async function deleteProduct(req , res){
 
 export async function updateproduct(req , res){
 
-    if(isAdmin(req)){
+    if(!isAdmin(req)){
         res.status(403).json({
             message : "Access denide.admins only"
         })
@@ -163,7 +165,7 @@ export async function getProductById(req , res){
                 return;
             }
         }
-        res.status(200).json(Product);
+        res.status(200).json(product);
 
     }catch(error){
         res.status(500).json({message : "Erroe fetching Product", error : error})

@@ -5,6 +5,7 @@ const productRouter = exprees.Router();
 
 productRouter.post("/", createProduct);
 productRouter.get("/", getProduct);
+
 productRouter.delete("/:productId",deleteProduct)
 productRouter.put("/:productId",updateproduct)
 productRouter.get("/:productId",getProductById)

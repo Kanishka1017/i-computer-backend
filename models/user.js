@@ -42,7 +42,8 @@ const userScheama = new mongoose.Schema({
     },
 
     image : {
-        type : String
+        type : String,
+        default : "http://localhost:3000/Default.profile-png.png"
     }
 })
 

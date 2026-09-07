@@ -1,9 +1,10 @@
 import exprees from "express"
-import { createOrder, getorders } from "../controllers/orderController.js";
+import { createOrder, getorders, updateOrderStatusAndNotes } from "../controllers/orderController.js";
  
 const orderRouter = exprees.Router();
 
 orderRouter.post("/",createOrder);
-orderRouter.get("/:pageSize/:pageNumber",getorders)
+orderRouter.get("/:pageSize/:pageNumber",getorders);
+orderRouter.put("/:orderId", updateOrderStatusAndNotes)
 
 export default orderRouter;

@@ -128,11 +128,11 @@ try{
         })
 
     }else{
-        const numberOfOrders = await orders.countDocuments()
+        const numberOfOrders = await Order.countDocuments()
 
         const numberofPages = Math.cbrt(numberOfOrders/pageSize)
 
-        const orders = await orders.find({email : req .user.email}).sort({date : -1}).skip((pageNumber -1)*pageSize).limit(pageSize)
+        const orders = await Order.find({email : req .user.email}).sort({date : -1}).skip((pageNumber -1)*pageSize).limit(pageSize)
 
         res.json({
             orders : orders,
@@ -145,4 +145,23 @@ try{
     res.status(500).json({message : "Error fetching orders", error : error})
 }
 
+}
+
+export async function updateOrderStatusAndNotes(req,res){
+    if(isAdmin (req)){
+        const orderId = req.params.orderId
+
+        try{
+        await Order.updateOne({orderId : orderId} ,{status: req.body.status, notes: req.body.notes})
+        res.json({message : "Order Status and notes update successfully"})
+
+        }catch(error){
+            console.log("Error updating order status and notes", error);
+            res.status(500).json({message:"Error updating order status and notes", error : error})
+            return;
+        }
+
+    }else{
+        res.status(403).json({message :"Only admin can update order status and notes"})
+    }
 }

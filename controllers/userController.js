@@ -56,6 +56,11 @@ export function loginUser(req,res){
                 }
 
                 else{
+
+                if(user.isBlocked){
+                res.status(500).json({message:"Your Account is block.pleace contact support for more infromation."})
+                return
+                }
                     const isPasswordValid = bcrypt.compareSync(req.body.password, user.password)
                     
                     if(isPasswordValid){
@@ -290,6 +295,11 @@ export async function googlelogin(req, res){
                         process.env.JWT_SECRET,
                     );  
         }else{
+
+            if(user.isBlocked){
+                res.status(500).json({message:"Your Account is block.pleace contact support for more infromation."})
+                return
+            }
             const token = jwt.sign({
                             email : user.email,
                             firstName : user.firstName,
@@ -307,5 +317,92 @@ export async function googlelogin(req, res){
                 }
     }catch(error){
         res.status(500).json({message: "Error login with google", error: error})
+    }
+}
+
+export async function getAllUsers(req, res){
+    if(!isAdmin){
+        req.status(403).json({message:"Forbbiden"})
+        return
+    }
+
+    try{
+    const pageSizeInString = req.params.pageSize || "10"
+
+    const pageNumberInString = req.params.pageNumber || "1"
+
+    const pageSize = parseInt(pageSizeInString);
+
+    const pageNumber = parseInt(pageNumberInString);
+
+    const numberOfUsers = await User.countDocuments()
+
+    const numberofPages = Math.ceil(numberOfUsers / pageSize)
+
+    const users = await User.find().sort({date : -1}).skip((pageNumber -1)*pageSize).limit(pageSize)
+
+    res.json({
+            users : users,
+            totalPages : numberofPages
+        })
+
+    }catch(error){
+        res.status(500).json({message: "Error getting users", error: error})
+    }
+}
+
+export async function blockOrUnblockUser(req, res){
+
+    if(!isAdmin(req)){
+        res.status(403).json({message:"Frobbiden"})
+        return
+    }
+
+    const email = req.body.email
+
+    if(req.user.email == email){
+        res.status(400).json({message: "You can not block youself"})
+        return
+    }
+
+    try{
+        const user = await User.findOne({email : email})
+
+        if(user == null){
+            res.status(400).json({message: "User with given email not found"})
+            return
+        }
+        await User.updateOne({email : email}, {isBlocked : !user.isBlocked})
+        res.json({message: user.isBlocked ? "User Unblock successfull" : "User block successfull"})
+    }catch(error){
+        res.status(403).json({message: "Error blocking/unbloking user", error : error})
+    }
+}
+
+export async function changeRoll(req, res){
+
+    if(!isAdmin(req)){
+        res.status(403).json({message:"Frobbiden"})
+        return
+    }
+
+    const email = req.body.email
+
+    if(req.user.email == email){
+        res.status(400).json({message: "You can not change your own roll"})
+        return
+    }
+    try{
+        const user = await User.findOne({email : email})
+
+        if(user == null){
+            res.status(400).json({message: "User with given email not found"})
+            return
+        }
+        await User.updateOne({email : email}, {role: user.role == "admin" ? "custommer": "admin"})
+        res.json({message: user.role == "admin" ? "User role change to custommer successfull" : "User roll change to admin succesfull"})
+
+    }catch(error){
+        res.status(400).json({message: "error changing user roll", error: error})
     }
 }

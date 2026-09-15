@@ -1,10 +1,11 @@
 import exprees from "express"
-import { createProduct, deleteProduct, getProduct, getProductById, updateproduct } from "../controllers/productController.js";
+import { createProduct, deleteProduct, getProduct, getProductById, searchProduct, updateproduct } from "../controllers/productController.js";
 
 const productRouter = exprees.Router();
 
 productRouter.post("/", createProduct);
 productRouter.get("/", getProduct);
+productRouter.get("/search/:query",searchProduct)
 
 productRouter.delete("/:productId",deleteProduct)
 productRouter.put("/:productId",updateproduct)
